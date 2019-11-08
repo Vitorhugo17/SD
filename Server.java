@@ -1,15 +1,14 @@
 import java.net.*;
-import java.util.Hashtable;
 import java.io.*;
+import java.util.*;
 
 public class Server {
     static int DEFAULT_PORT = 8081;
     
 	public static void main(String[] args) {
 		int port = DEFAULT_PORT;
-		ArrayList<Presence> presencesList = new ArrayList<Presence>();
+		ArrayList<String> presencesList = new ArrayList<String>();
 		ArrayList<Message> messageList = new ArrayList<Message>();
-		Hashtable<Integer, User> userList = new Hashtable<Integer, User>();
 
 		ServerSocket server = null;
 		try {
@@ -25,7 +24,7 @@ public class Server {
 			try {
 				Socket connection = server.accept();
 				
-				ServerHandler handler = new ServerHandler(connection, presencesList, messageList, userList);
+				ServerHandler handler = new ServerHandler(connection, presencesList, messageList);
 				handler.start();
 			} catch (IOException e) {
 				System.out.println("Erro na execucao do servidor: " + e);
