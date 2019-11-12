@@ -241,6 +241,12 @@ public class ServerHandler extends Thread {
 						out.flush();
 					}
 					break;
+				case "OPTIONS": 
+					out.println("HTTP/1.1 200 OK");
+					out.println("Access-Control-Allow-Headers: Content-Type");
+					out.println("Access-Control-Allow-Origin: *");
+					out.flush();					
+					break;
 				default:
 					res = new String("404 Not Found");
 					length = res.length();
