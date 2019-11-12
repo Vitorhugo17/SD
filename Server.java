@@ -7,8 +7,8 @@ public class Server {
     
 	public static void main(String[] args) {
 		int port = DEFAULT_PORT;
-		ArrayList<String> presencesList = new ArrayList<String>();
-		ArrayList<Message> messageList = new ArrayList<Message>();
+		Hashtable<Integer, String> presencesList = new Hashtable<Integer, String>();
+		ArrayList<Message> messagesList = new ArrayList<Message>();
 
 		ServerSocket server = null;
 		try {
@@ -24,7 +24,7 @@ public class Server {
 			try {
 				Socket connection = server.accept();
 				
-				ServerHandler handler = new ServerHandler(connection, presencesList, messageList);
+				ServerHandler handler = new ServerHandler(connection, presencesList, messagesList);
 				handler.start();
 			} catch (IOException e) {
 				System.out.println("Erro na execucao do servidor: " + e);
