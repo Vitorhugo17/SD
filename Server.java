@@ -28,7 +28,6 @@ public class Server {
 				handler.start();
 			} catch (IOException e) {
 				System.out.println("Erro na execucao do servidor: " + e);
-				server.close();
 				System.exit(1);
 			}
 		}
