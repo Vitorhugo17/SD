@@ -69,10 +69,18 @@ public class ServerHandler extends Thread {
 						txt += "], \"messages\": [";
 						for (int j = 0; j < messagesList.size(); j++) {
 							Message m = messagesList.get(j);
+							int idUserM = 0;
+							Enumeration presencesKeys = presencesList.keys();
+							while(presencesKeys.hasMoreElements()) {
+								int y = (int) presencesKeys.nextElement();
+								if (presencesList.get(y).equals(m.getWriter())) {
+									idUserM = y;
+								}
+							}
 							if (j != 0) {
-								txt += ", {\"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage() + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+									txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"",  "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 							} else {
-								txt += "{\"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage() + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+								txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"",  "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 							}
 						};
 						txt += "]}";
@@ -149,10 +157,18 @@ public class ServerHandler extends Thread {
 								txt += "], \"messages\": [";
 								for (int j = 0; j < messagesList.size(); j++) {
 									Message m = messagesList.get(j);
+									int idUserM = 0;
+									Enumeration presencesKeys = presencesList.keys();
+									while(presencesKeys.hasMoreElements()) {
+										int y = (int) presencesKeys.nextElement();
+										if (presencesList.get(y).equals(m.getWriter())) {
+											idUserM = y;
+										}
+									}
 									if (j != 0) {
-										txt += ", {\"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage() + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+											txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 									} else {
-										txt += "{\"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage() + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+										txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 									}
 								};
 								txt += "]}";
