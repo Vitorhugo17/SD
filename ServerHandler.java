@@ -78,9 +78,9 @@ public class ServerHandler extends Thread {
 								}
 							}
 							if (j != 0) {
-									txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"",  "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+								txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 							} else {
-								txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"",  "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+								txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 							}
 						};
 						txt += "]}";
@@ -166,7 +166,7 @@ public class ServerHandler extends Thread {
 										}
 									}
 									if (j != 0) {
-											txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+										txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 									} else {
 										txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
 									}
