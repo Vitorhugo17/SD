@@ -124,84 +124,84 @@ public class ServerHandler extends Thread {
 						//transformação do body num JSON Object
 						json = new JSONObject(jsonString);
 						
-						synchronized(messagesList) {
-							//inicio da verificação de se aquele id de utilizador existe na lista de presenças
-							int idUser = Integer.parseInt((String) json.get("idUser"));
-							boolean exists = false;
-							Enumeration presencesId = presencesList.keys();
-							String username = "";
-							while(presencesId.hasMoreElements()) {
-								if ((int) presencesId.nextElement() == idUser) {
-									exists = true;
-									username = presencesList.get(idUser);
+						//inicio da verificação de se aquele id de utilizador existe na lista de presenças
+						int idUser = Integer.parseInt((String) json.get("idUser"));
+						boolean exists = false;
+						Enumeration presencesId = presencesList.keys();
+						String username = "";
+						while(presencesId.hasMoreElements()) {
+							if ((int) presencesId.nextElement() == idUser) {
+								exists = true;
+								username = presencesList.get(idUser);
+							}
+						};
+						//fim da verificação
+
+						if (exists) {
+							//Inicio da criação do objeto Message e posterior inserção na lista de messagens
+							String messageText = (String) json.get("message");
+							long writeTime = new Date().getTime();
+							Message message = new Message(username, writeTime, messageText);
+						
+							synchronized(this) {
+								messagesList.add(message);
+							}
+							//Fim da criação e da inserção
+
+							//Começo da criação do conteúdo da resposta 
+							txt = "{\"presences\":  [";
+							//Inicio da iteração sobre os elementos da lista de presenças e a inserção dos mesmos na resposta
+							Enumeration presences = presencesList.elements();
+							int i = 0;
+							while(presences.hasMoreElements()) {
+								if (i != 0) {
+									txt += ", \"" + presences.nextElement() + "\"";
+								} else {
+									i++;
+									txt += "\"" + presences.nextElement() + "\"";
 								}
 							};
-							//fim da verificação
-
-							if (exists) {
-								//Inicio da criação do objeto Message e posterior inserção na lista de messagens
-								String messageText = (String) json.get("message");
-								long writeTime = new Date().getTime();
-								Message message = new Message(username, writeTime, messageText);
-
-								messagesList.add(message);
-								//Fim da criação e da inserção
-
-								//Começo da criação do conteúdo da resposta 
-								txt = "{\"presences\":  [";
-								//Inicio da iteração sobre os elementos da lista de presenças e a inserção dos mesmos na resposta
-								Enumeration presences = presencesList.elements();
-								int i = 0;
-								while(presences.hasMoreElements()) {
-									if (i != 0) {
-										txt += ", \"" + presences.nextElement() + "\"";
-									} else {
-										i++;
-										txt += "\"" + presences.nextElement() + "\"";
+							//Fim da iteração
+							txt += "], \"messages\": [";
+							//Inicio da iteração sobre os elementos da lista de mensagens e a inserção dos mesmos na resposta
+							for (int j = 0; j < messagesList.size(); j++) {
+								Message m = messagesList.get(j);
+								int idUserM = 0;
+								Enumeration presencesKeys = presencesList.keys();
+								while(presencesKeys.hasMoreElements()) {
+									int y = (int) presencesKeys.nextElement();
+									if (presencesList.get(y).equals(m.getWriter())) {
+										idUserM = y;
 									}
-								};
-								//Fim da iteração
-								txt += "], \"messages\": [";
-								//Inicio da iteração sobre os elementos da lista de mensagens e a inserção dos mesmos na resposta
-								for (int j = 0; j < messagesList.size(); j++) {
-									Message m = messagesList.get(j);
-									int idUserM = 0;
-									Enumeration presencesKeys = presencesList.keys();
-									while(presencesKeys.hasMoreElements()) {
-										int y = (int) presencesKeys.nextElement();
-										if (presencesList.get(y).equals(m.getWriter())) {
-											idUserM = y;
-										}
-									}
-									if (j != 0) {
-										txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
-									} else {
-										txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
-									}
-								};
-								//Fim da iteração
-								txt += "]}";
-								//Fim da criação do conteudo
-								res = new String(txt);
-								length = res.length();
-								out.println("HTTP/1.1 200 OK");
-								out.println("Access-Control-Allow-Origin: *");
-								out.println("Content-type: application/json");
-								out.println("Content-Length: " + length);
-								out.write("\r\n");
-								out.println(res);
-							} else {
-								res = new String("{\"error\": \"User not register\"}");
-								length = res.length();
-								out.println("HTTP/1.1 400 Bad Request");
-								out.println("Access-Control-Allow-Origin: *");
-								out.println("Content-type: application/json");
-								out.println("Content-Length: " + length);
-								out.write("\r\n");
-								out.println(res);
-							}
-							out.flush();
+								}
+								if (j != 0) {
+									txt += ", {\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+								} else {
+									txt += "{\"idUser\": \"" + idUserM + "\", \"writer\": \"" + m.getWriter() + "\", \"message\": \"" + m.getMessage().replaceAll("\"", "\\\\\"") + "\", \"date\": \"" + new Date(m.getWriteTime()) + "\"}";
+								}
+							};
+							//Fim da iteração
+							txt += "]}";
+							//Fim da criação do conteudo
+							res = new String(txt);
+							length = res.length();
+							out.println("HTTP/1.1 200 OK");
+							out.println("Access-Control-Allow-Origin: *");
+							out.println("Content-type: application/json");
+							out.println("Content-Length: " + length);
+							out.write("\r\n");
+							out.println(res);
+						} else {
+							res = new String("{\"error\": \"User not register\"}");
+							length = res.length();
+							out.println("HTTP/1.1 400 Bad Request");
+							out.println("Access-Control-Allow-Origin: *");
+							out.println("Content-type: application/json");
+							out.println("Content-Length: " + length);
+							out.write("\r\n");
+							out.println(res);
 						}
+						out.flush();
 					} else if (route.equals("/users")) {
 						//inicio da leitura do body do pedido POST
 						while (in.ready()) {
@@ -218,52 +218,52 @@ public class ServerHandler extends Thread {
 						//transformação do body num JSON Object
 						json = new JSONObject(jsonString);
 						
-						synchronized(presencesList) {
-							//Inicio da verificação se o username enviado já existe na lista de presenças
-							String username = (String) json.get("username");
-							boolean exists = false;
-							Enumeration presences = presencesList.elements();
-							while(presences.hasMoreElements()) {
-								String u = (String) presences.nextElement();
-								if (u.equals(username)) {
-									exists = true;
-								}
-							};
-							//Fim da verificação
-
-							if (!exists) {
-								//Inicio da criação do id que este utilizador irá receber
-								int id = 0;
-								if (!presencesList.isEmpty()) {
-									Enumeration presencesId = presencesList.keys();
-									id = (int) presencesId.nextElement();
-								}
-								id++;
-								//Fim da criação do id
-								//Inserção do id e do utilizador na lista de presenças
-								presencesList.put(id, username);
-								//Criação da resposta ao pedido
-								txt = "{\"idUser\":  " + id + "}";
-								res = new String(txt);
-								length = res.length();
-								out.println("HTTP/1.1 200 OK");
-								out.println("Access-Control-Allow-Origin: *");
-								out.println("Content-type: application/json");
-								out.println("Content-Length: " + length);
-								out.write("\r\n");
-								out.println(res);
-							} else {
-								res = new String("{\"error\": \"Username already exists\"}");
-								length = res.length();
-								out.println("HTTP/1.1 400 Bad Request");
-								out.println("Access-Control-Allow-Origin: *");
-								out.println("Content-type: application/json");
-								out.println("Content-Length: " + length);
-								out.write("\r\n");
-								out.println(res);
+						//Inicio da verificação se o username enviado já existe na lista de presenças
+						String username = (String) json.get("username");
+						boolean exists = false;
+						Enumeration presences = presencesList.elements();
+						while(presences.hasMoreElements()) {
+							String u = (String) presences.nextElement();
+							if (u.equals(username)) {
+								exists = true;
 							}
-							out.flush();
+						};
+						//Fim da verificação
+
+						if (!exists) {
+							//Inicio da criação do id que este utilizador irá receber
+							int id = 0;
+							if (!presencesList.isEmpty()) {
+								Enumeration presencesId = presencesList.keys();
+								id = (int) presencesId.nextElement();
+							}
+							id++;
+							//Fim da criação do id
+							//Inserção do id e do utilizador na lista de presenças
+							synchronized(this) {
+								presencesList.put(id, username);
+							}
+							//Criação da resposta ao pedido
+							txt = "{\"idUser\":  " + id + "}";
+							res = new String(txt);
+							length = res.length();
+							out.println("HTTP/1.1 200 OK");
+							out.println("Access-Control-Allow-Origin: *");
+							out.println("Content-type: application/json");
+							out.println("Content-Length: " + length);
+							out.write("\r\n");
+							out.println(res);
+						} else {
+							res = new String("{\"error\": \"Username already exists\"}");
+							length = res.length();
+							out.println("HTTP/1.1 400 Bad Request");
+							out.println("Access-Control-Allow-Origin: *");
+							out.println("Content-type: application/json");
+							out.println("Content-Length: " + length);
+							out.write("\r\n");
+							out.println(res);
 						}
+						out.flush();
 					} else {
 						res = new String("404 Not Found");
 						length = res.length();
